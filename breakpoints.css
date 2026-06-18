@@ -230,8 +230,8 @@
 
 @media (max-width: 480px) {
 
-    .intro {
-        
+    body {
+        overflow-x: hidden;
     }
 
     .intro .name {
