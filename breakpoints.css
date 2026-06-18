@@ -1,0 +1,265 @@
+@media (max-width: 1024px) {
+    .products {
+        height: 200vh;
+        flex-wrap: wrap;
+    }
+
+    .watch {
+        width: 50%;
+    }
+
+    #case {
+        width: 100%;
+    }
+
+    .color-box {
+        position: relative;
+        width: 100%;
+        top: auto;
+        left: auto;
+        justify-content: center;
+    }
+    #case .device {
+        height: 500px;
+    }
+    #case .dev-case {
+        background-size: 50%;
+        background-position: center
+    }
+    #case #buttonblock2 {
+        display: flex;
+        align-self: center;
+        margin-top: -10%;
+        padding: 0px;
+        height: 30px;
+        width: 200px;
+        justify-content: center;
+        align-items: center;
+    }
+    .leftorang {
+       background-size: cover; background-position: 50% 50%; 
+    }
+    @keyframes box {
+    to { background-size: cover; background-position: 50% 50%;}
+    }
+    .righttext {
+        font-size: 15px;
+        text-wrap: wrap;
+        line-height: 1.2;
+        left: 52%;
+    }
+    #HD {
+        font-size: 25px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    body {
+        overflow-x: hidden;
+    }
+
+    header {
+        height: 60px;
+    }
+    .logo {
+        width: 70px;
+        background-size: 70%;
+    }
+    #menu {
+        font-size: 14px;
+        margin-left: 5%;
+    }
+    .shop {
+        width: 50px;
+        background-size: 35%;
+    }
+
+    /* Главная карусель */
+    .main {
+        height: 70vh;
+        width: 400vw;
+    }
+    .section {
+        height: 70vh;
+    }
+    .intro {
+        margin: 10vh 20px;
+        height: 200px;
+        gap: 10px;
+    }
+    .intro .name {
+        font-size: 32px;
+    }
+    .intro .lor {
+        font-size: 12px;
+    }
+    button {
+        width: 150px;
+        height: 28px;
+        font-size: 11px;
+    }
+
+    /* Продукция */
+    .products {
+        flex-direction: column;
+        height: auto;
+    }
+    .watch {
+        width: 100%;
+        height: auto;
+        padding-bottom: 30px;
+    }
+    .information .name {
+        font-size: 28px !important;
+        letter-spacing: -1px !important;
+    }
+    .price {
+        font-size: 18px;
+    }
+
+    .color-box {
+        top: auto;
+        position: relative;
+        margin-top: 10px;
+        width: 90%;
+        gap: 15px;
+    }
+
+    .device {
+        height: 300px;
+    }
+
+    .dev, .dev-watch, .dev-case {
+        background-size: contain;
+        background-position: center;
+    }
+    #watch .device{
+        height: 400px;
+    }
+
+    .lorem {
+        flex-direction: column;
+        gap: 20px;
+        padding: 30px 10px;
+    }
+    .block {
+        width: 100%;
+        padding-top: 0;
+        gap: 25px;
+    }
+    .blockproduct {
+        height: auto;
+    }
+    .lir {
+        width: 90%;
+        font-size: 14px;
+    }
+    #H {
+        font-size: 24px;
+    }
+
+    /* Дизайн-блок */
+    .blockdisain {
+        flex-direction: column;
+        height: auto;
+    }
+    .leftorang {
+        width: 100%;
+        height: 40vh;
+        background-size: cover;
+    }
+    .righttext {
+        position: static;
+        width: 90%;
+        transform: none;
+        margin: 20px auto;
+        font-size: 12px;
+        width: 95%;
+        font-size: 14px;
+        text-align: left;
+    }
+    #HD {
+        font-size: 28px;
+    }
+
+    .notext {
+        font-size: 28px;
+        height: 80px;
+    }
+
+    footer {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .rightbox,
+    .leftbox {
+        width: 100%;
+    }
+
+    .firstbox {
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .logofooter {
+        width: 120px;
+        height: auto;
+        margin: 0;
+    }
+
+    .lineone,
+    .linetwo {
+        background-size: contain;
+    }
+    .device {
+        height: 250px;
+    }
+
+    .dev,
+    .dev-watch,
+    .dev-case {
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+    .progress-box {
+        bottom: 35vh;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .intro {
+        
+    }
+
+    .intro .name {
+        font-size: 24px;
+    }
+
+    .intro .lor {
+        font-size: 10px;
+    }
+
+    button {
+        width: 130px;
+        font-size: 10px;
+    }
+
+    .information {
+        padding: 20px;
+    }
+
+    .price {
+        font-size: 16px;
+    }
+
+    .notext {
+        font-size: 20px;
+        text-align: center;
+        margin-left: 0;
+        justify-content: center;
+    }
+
+}
