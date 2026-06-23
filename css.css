@@ -117,9 +117,10 @@ main {
     position: relative;
     background-color: rgb(161, 161, 161);
     width: 100px;
-    height: 7px;
+    height: 100%;
     border-radius: 50vh;
     overflow: hidden;
+    animation: lineBack 15s linear infinite;
 }
 .progress::before {
     content: "";
@@ -127,31 +128,75 @@ main {
     width: 100px;
     height: 7px;
     background-color: rgb(255, 61, 12);
-    transform: scaleX(0);
+    transform: scaleX(0.5);
     transition: all 5s linear;
     transform-origin: left;
     border-top-right-radius: 50vh;  
     border-bottom-right-radius: 50vh;
-    animation: line 5s linear infinite;   
+    animation: line 15s linear infinite;   
 }
 @keyframes line {
-    to { transform: scaleX(1);}
+    15% {transform: scaleX(1);}
+    15.4%, 80% {transform: scaleX(0);}
+    100% {transform: scaleX(0.5);}
+}
+@keyframes lineBack {
+    15%, 1% { width: 100px;}
+    16%, 80% {width: 7px;}
+    80.4% { width: 100px;}
+    100% {width: 100px;}
+}
+#pgrsTwo {
+    width: 7px;
+    animation: lineBackTwo 15s linear infinite;
+}
+#pgrsTwo::before {
+    transform: scaleX(0);
+    animation: lineTwo 15s linear infinite;
+}
+@keyframes lineTwo {
+    15% {transform: scaleX(0);}
+    50% {transform: scaleX(1);}
+    50.1% {transform: scaleX(0);}
+}
+@keyframes lineBackTwo {
+    15% { width: 7px;}
+    16%, 50% {width: 100px;}
+    51% {width: 7px;}
+}
+#pgrsThree {
+    width: 7px;
+    animation: lineBackThree 15s linear infinite;
+}
+#pgrsThree::before {
+    transform: scaleX(0);
+    animation: lineThree 15s linear infinite;
+}
+@keyframes lineThree {
+    51% {transform: scaleX(0);}
+    80% {transform: scaleX(1);}
+    80.1% {transform: scaleX(0);}
+}
+@keyframes lineBackThree {
+    50% { width: 7px;}
+    51%, 80% {width: 100px;}
+    80.4% {width: 7px;}
 }
 .progress.clicked {
     width: 7px;
     height: 7px;
 }
+@keyframes ribbon {
+ 0%, 15% { transform: translateX(0vw);}
+ 30%, 50% { transform: translateX(-100vw);}
+ 55%, 80% { transform: translateX(-200vw);}
+ 85%, 100% { transform: translateX(-300vw);}
+}
 .ribbon {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;  
-    animation: ribbon  20s ease infinite;
-}
-@keyframes ribbon {
- 0%, 25% { transform: translateX(0vw);}
- 30%, 50% { transform: translateX(-100vw);}
- 55%, 75% { transform: translateX(-200vw);}
- 80%, 100% { transform: translateX(-300vw);}
+    animation: ribbon  15s ease infinite;
 }
 header {
     position: absolute;
