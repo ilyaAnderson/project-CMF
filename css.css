@@ -93,14 +93,15 @@ button:hover {
 }
 .progress-box {
     display: flex;
-    align-items: end;
+    flex-direction: row;
+    align-items: center;
     justify-content: center;
     position: absolute;
     width: 100vw;
-    height: 100px;
+    height: 7px;
     bottom: 14vh;
     z-index: 10;
-    
+    gap: 5px;
 }
 main {
     display: flex;
