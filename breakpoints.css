@@ -159,25 +159,35 @@
         font-size: 24px;
     }
 
-    /* Дизайн-блок */
     .blockdisain {
         flex-direction: column;
-        height: auto;
+        height: 150vh;
+    }
+    .leftorang, .righttext {
+        display: flex;
+        flex-grow: 1;
     }
     .leftorang {
-        width: 100%;
-        height: 40vh;
+        background: url(/material/63bb3cac25998af0d2d6b646a65e6341.jpg) no-repeat;
         background-size: cover;
+        height: 50%;
     }
     .righttext {
         position: static;
-        width: 90%;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        flex-grow: 1;
+        height: 50%;
         transform: none;
-        margin: 20px auto;
-        font-size: 12px;
-        width: 95%;
-        font-size: 14px;
+        width: 100%;
+        font-size: 16px;
+        font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        font-weight: 300;
         text-align: left;
+        background-color: rgb(175, 175, 168);
+    }  text-align: left;
     }
     #HD {
         font-size: 28px;
