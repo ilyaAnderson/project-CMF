@@ -502,9 +502,6 @@ transform: translateX(0%);
     background: url('material/2aa16370705ffbe0a6c49d29ec21c8d3.png') no-repeat;
     background-position: 50% 50%;
     background-size: 150%;
-    animation: box linear forwards;
-    animation-timeline: view();
-    animation-range-end: 100vh;
 }
 .righttext {
     line-height: 1.7;
@@ -615,9 +612,6 @@ footer {
 }
 @keyframes divaice {
     to { opacity: 1; transform: scaleX(1) translateY(0)}
-}
-@keyframes box {
-    to { background-size: 100%; background-position: 50% 50%;}
 }
 #HD {
     font-size: clamp(24px, 5vw, 45px);
