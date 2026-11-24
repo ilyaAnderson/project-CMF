@@ -38,7 +38,7 @@ header {
 
 main { width: 100%; }
 .main { position: relative; width: 100%; height: min(88svh, 850px); min-height: 520px; overflow: hidden; }
-.ribbon { display: flex; width: 100%; height: 100%; transition: transform 520ms cubic-bezier(.2,.75,.25,1); will-change: transform; }
+.ribbon { display: flex; width: 100%; height: 100%; animation: none; transition: transform 520ms cubic-bezier(.2,.75,.25,1); will-change: transform; }
 .section { position: relative; flex: 0 0 100%; width: 100%; height: 100%; min-width: 0; }
 .card { position: relative; display: flex; align-items: flex-end; width: 100%; height: 100%; background-position: center; background-size: cover; }
 .card::after { position: absolute; inset: 25% 0 0; content: ""; background: linear-gradient(0deg, rgb(0 0 0 / 64%), transparent); pointer-events: none; }
@@ -52,9 +52,8 @@ main { width: 100%; }
 .slider-previous { left: clamp(12px, 2vw, 28px); }
 .slider-next { right: clamp(12px, 2vw, 28px); }
 .progress-box { position: absolute; z-index: 5; inset: auto 0 26px; display: flex; justify-content: center; gap: 9px; width: 100%; height: auto; }
-.progress { position: relative; width: clamp(34px, 7vw, 74px); height: 4px; padding: 0; overflow: hidden; border: 0; border-radius: 10px; background: rgb(255 255 255 / 52%); }
-.progress::before { position: absolute; inset: 0; width: 0; content: ""; border-radius: inherit; background: white; transition: width .25s ease; }
-.progress.is-active::before { width: 100%; }
+.progress { position: relative; width: clamp(34px, 7vw, 74px); height: 4px; padding: 0; overflow: hidden; border: 0; border-radius: 10px; background: rgb(255 255 255 / 52%); animation: none; }
+.progress::before { position: absolute; inset: 0 auto 0 0; width: var(--progress-fill, 0%); content: ""; border-radius: inherit; background: white; transform: none; animation: none; transition: width var(--progress-duration, 6500ms) linear; }
 
 .blockproduct { position: relative; width: 100%; min-height: 0; height: auto; padding: clamp(45px, 7vw, 100px) clamp(16px, 4vw, 64px); background: #292626; }
 #product-collections { scroll-margin-top: 70px; }

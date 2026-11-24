@@ -3,11 +3,14 @@ const track = document.querySelector(".ribbon");
 const slides = [...document.querySelectorAll(".section")];
 const indicators = [...document.querySelectorAll(".progress")];
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const slideDuration = 6500;
 let activeSlide = 0;
 let carouselTimer;
+let progressFrame;
 let touchStartX = 0;
 
 function showSlide(index) {
+  if (!track || slides.length === 0) return;
   activeSlide = (index + slides.length) % slides.length;
   track.style.transform = `translateX(-${activeSlide * 100}%)`;
   slides.forEach((slide, position) => {
@@ -17,20 +20,47 @@ function showSlide(index) {
     });
   });
   indicators.forEach((indicator, position) => {
-    const selected = position === activeSlide;
-    indicator.classList.toggle("is-active", selected);
-    indicator.setAttribute("aria-pressed", String(selected));
+    indicator.classList.remove("is-active");
+    indicator.setAttribute("aria-pressed", String(position === activeSlide));
+    indicator.style.setProperty("--progress-duration", `${slideDuration}ms`);
+    indicator.style.setProperty("--progress-fill", "0%");
   });
+  window.cancelAnimationFrame(progressFrame);
+  const activeIndicator = indicators[activeSlide];
+  if (activeIndicator) {
+    if (reducedMotion.matches) {
+      activeIndicator.style.setProperty("--progress-fill", "100%");
+      activeIndicator.classList.add("is-active");
+    } else {
+      progressFrame = window.requestAnimationFrame(() => {
+        activeIndicator.style.setProperty("--progress-fill", "100%");
+        activeIndicator.classList.add("is-active");
+      });
+    }
+  }
 }
 
 function stopCarousel() {
-  window.clearInterval(carouselTimer);
+  window.clearTimeout(carouselTimer);
+  window.cancelAnimationFrame(progressFrame);
+  const activeIndicator = indicators[activeSlide];
+  if (activeIndicator && !reducedMotion.matches) {
+    const railWidth = activeIndicator.getBoundingClientRect().width;
+    const fillWidth = Number.parseFloat(getComputedStyle(activeIndicator, "::before").width) || 0;
+    const progress = railWidth ? Math.min(100, (fillWidth / railWidth) * 100) : 0;
+    activeIndicator.style.setProperty("--progress-duration", "0ms");
+    activeIndicator.style.setProperty("--progress-fill", `${progress}%`);
+  }
 }
 
 function startCarousel() {
   stopCarousel();
   if (reducedMotion.matches || document.hidden || slides.length < 2) return;
-  carouselTimer = window.setInterval(() => showSlide(activeSlide + 1), 6500);
+  showSlide(activeSlide);
+  carouselTimer = window.setTimeout(() => {
+    showSlide(activeSlide + 1);
+    startCarousel();
+  }, slideDuration);
 }
 
 document.querySelector(".slider-previous")?.addEventListener("click", () => {
