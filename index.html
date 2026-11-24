@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0 user-scalable=no">
-    <title>Фирменный магазин annders</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Учебный концепт витрины техники CMF by Nothing с адаптивными промо-блоками и карточками устройств.">
+    <title>CMF Store — концепт витрины устройств</title>
     <link rel="icon" href="material/logo (1).svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css.css">
     <link rel="stylesheet" href="breakpoints.css">
+    <link rel="stylesheet" href="mobile-fixes.css">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Dela+Gothic+One&family=Doto:wght@100..900&family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Noto+Sans+JP:wght@100..900&family=Noto+Sans+Linear+A&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head> 
 <body>
@@ -83,7 +85,7 @@
                         <div id="black-head" class="dev"></div>
                         <div id="orange-head" class="dev"></div> 
                     </div>
-                    <button id="buttonblock2" style="display: flex; align-self: center; margin-top: 10%; justify-content: center; align-items: center;">ПОДРОБНЕЕ</button>
+                    <button class="product-detail-button" style="display: flex; align-self: center; margin-top: 10%; justify-content: center; align-items: center;">ПОДРОБНЕЕ</button>
                 </div>
                 <div id="watch" class="watch">
                     <div class="information">
@@ -103,7 +105,7 @@
                         <div id="gray-watch" class="dev-watch"></div>
                         <div id="orange-watch" class="dev-watch"></div>
                     </div>
-                    <button id="buttonblock2" style="display: flex; align-self: center; margin-top: 10%; justify-content: center; align-items: center;">ПОДРОБНЕЕ</button>
+                    <button class="product-detail-button" style="display: flex; align-self: center; margin-top: 10%; justify-content: center; align-items: center;">ПОДРОБНЕЕ</button>
                 </div>
                 <div id="case" class="watch">
                     <div class="information">
@@ -121,24 +123,24 @@
                         <div id="black-case" class="dev-case"></div>
                         <div id="orange-case" class="dev-case"></div>
                     </div>
-                    <button id="buttonblock2">ПОДРОБНЕЕ</button>
+                    <button class="product-detail-button">ПОДРОБНЕЕ</button>
                 </div>
             </div>
             <div class="lorem">
                 <div class="block">
-                    <div class="lir"><p id="H">Forbes</p> <p>"Новые CMF Buds Pro от Nothing - лучшие беспроводные наушники стоимостью до 5000р"</p></div>
-                    <div class="lir"><p id="H">T3</p> <p>"Наушники CMF Buds Pro by Nothing обладают лучшими характеристиками среди бюджетных"</p></div>
-                    <div class="lir"><p id="H">TechRadar</p> <p>"Если и существует компания, которая может вернуть моду на наушники с шейным ободом, то это определённо CMF by Nothing"</p></div>
+                    <div class="lir"><p class="review-source">Forbes</p> <p>"Новые CMF Buds Pro от Nothing - лучшие беспроводные наушники стоимостью до 5000р"</p></div>
+                    <div class="lir"><p class="review-source">T3</p> <p>"Наушники CMF Buds Pro by Nothing обладают лучшими характеристиками среди бюджетных"</p></div>
+                    <div class="lir"><p class="review-source">TechRadar</p> <p>"Если и существует компания, которая может вернуть моду на наушники с шейным ободом, то это определённо CMF by Nothing"</p></div>
                 </div>
                 <div class="block">
-                    <div class="lir"><p id="H">Creative Bloq</p> <p>"Новый бренд CMF by Nothing разрушает устои"</p></div>
-                    <div class="lir"><p id="H">Hypebeast</p> <p>"Разработаны во вневременном функциональном дизайне, с тщательным выбором цветов, материалов и обработки"</p></div>
-                    <div class="lir"><p id="H">Stuff</p> <p>"CMF Buds - исключительная универсальность при ограниченном бюджете"</p></div>
+                    <div class="lir"><p class="review-source">Creative Bloq</p> <p>"Новый бренд CMF by Nothing разрушает устои"</p></div>
+                    <div class="lir"><p class="review-source">Hypebeast</p> <p>"Разработаны во вневременном функциональном дизайне, с тщательным выбором цветов, материалов и обработки"</p></div>
+                    <div class="lir"><p class="review-source">Stuff</p> <p>"CMF Buds - исключительная универсальность при ограниченном бюджете"</p></div>
                 </div>
                 <div class="block">
-                    <div class="lir"><p id="H">GQ</p> <p>"Набор доступных технологий, прекрасно выглядят и отлично <br> работают"</p></div>
-                    <div class="lir"><p id="H">Highsnobiety</p> <p>"Смарт-часы Watch Pro и наушники Buds Pro обладают минималистичным дизайном и возможностями, как у ведущих брендов, но за четверть их стоимости"</p></div>
-                    <div class="lir"><p id="H">GSM Arena</p> <p>"CMF Buds и Neckband Pro с активным шумоподавлением по низким ценам"</p></div>
+                    <div class="lir"><p class="review-source">GQ</p> <p>"Набор доступных технологий, прекрасно выглядят и отлично <br> работают"</p></div>
+                    <div class="lir"><p class="review-source">Highsnobiety</p> <p>"Смарт-часы Watch Pro и наушники Buds Pro обладают минималистичным дизайном и возможностями, как у ведущих брендов, но за четверть их стоимости"</p></div>
+                    <div class="lir"><p class="review-source">GSM Arena</p> <p>"CMF Buds и Neckband Pro с активным шумоподавлением по низким ценам"</p></div>
                 </div>
             </div>  
         </div>
