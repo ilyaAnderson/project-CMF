@@ -52,8 +52,12 @@ main { width: 100%; }
 .slider-previous { left: clamp(12px, 2vw, 28px); }
 .slider-next { right: clamp(12px, 2vw, 28px); }
 .progress-box { position: absolute; z-index: 5; inset: auto 0 26px; display: flex; justify-content: center; gap: 9px; width: 100%; height: auto; }
-.progress { position: relative; width: clamp(34px, 7vw, 74px); height: 4px; padding: 0; overflow: hidden; border: 0; border-radius: 10px; background: rgb(255 255 255 / 52%); animation: none; }
-.progress::before { position: absolute; inset: 0 auto 0 0; width: var(--progress-fill, 0%); content: ""; border-radius: inherit; background: white; transform: none; animation: none; transition: width var(--progress-duration, 6500ms) linear; }
+.progress { position: relative; flex: 0 0 auto; width: 7px; height: 7px; padding: 0; overflow: hidden; border: 0; border-radius: 10px; background: rgb(255 255 255 / 52%); animation: none; transition: width 260ms ease, background-color 260ms ease; }
+.progress.is-active { width: clamp(34px, 7vw, 74px); background: rgb(255 255 255 / 38%); }
+.progress::before { position: absolute; inset: 0; width: 100%; content: ""; border-radius: inherit; background: white; transform: scaleX(0); transform-origin: left center; animation: none; }
+.progress.is-active::before { animation: progress-fill 6500ms linear forwards; }
+.main.is-paused .progress.is-active::before { animation-play-state: paused; }
+@keyframes progress-fill { to { transform: scaleX(1); } }
 
 .blockproduct { position: relative; width: 100%; min-height: 0; height: auto; padding: clamp(45px, 7vw, 100px) clamp(16px, 4vw, 64px); background: #292626; }
 #product-collections { scroll-margin-top: 70px; }
@@ -168,4 +172,5 @@ footer { display: grid; grid-template-columns: 1fr 1fr; width: 100%; height: aut
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .progress.is-active::before { animation: none; transform: scaleX(1); }
 }

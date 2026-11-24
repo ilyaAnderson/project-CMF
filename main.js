@@ -22,40 +22,24 @@ function showSlide(index) {
   indicators.forEach((indicator, position) => {
     indicator.classList.remove("is-active");
     indicator.setAttribute("aria-pressed", String(position === activeSlide));
-    indicator.style.setProperty("--progress-duration", `${slideDuration}ms`);
-    indicator.style.setProperty("--progress-fill", "0%");
   });
   window.cancelAnimationFrame(progressFrame);
   const activeIndicator = indicators[activeSlide];
   if (activeIndicator) {
-    if (reducedMotion.matches) {
-      activeIndicator.style.setProperty("--progress-fill", "100%");
-      activeIndicator.classList.add("is-active");
-    } else {
-      progressFrame = window.requestAnimationFrame(() => {
-        activeIndicator.style.setProperty("--progress-fill", "100%");
-        activeIndicator.classList.add("is-active");
-      });
-    }
+    progressFrame = window.requestAnimationFrame(() => activeIndicator.classList.add("is-active"));
   }
 }
 
 function stopCarousel() {
   window.clearTimeout(carouselTimer);
   window.cancelAnimationFrame(progressFrame);
-  const activeIndicator = indicators[activeSlide];
-  if (activeIndicator && !reducedMotion.matches) {
-    const railWidth = activeIndicator.getBoundingClientRect().width;
-    const fillWidth = Number.parseFloat(getComputedStyle(activeIndicator, "::before").width) || 0;
-    const progress = railWidth ? Math.min(100, (fillWidth / railWidth) * 100) : 0;
-    activeIndicator.style.setProperty("--progress-duration", "0ms");
-    activeIndicator.style.setProperty("--progress-fill", `${progress}%`);
-  }
+  carousel?.classList.add("is-paused");
 }
 
 function startCarousel() {
   stopCarousel();
   if (reducedMotion.matches || document.hidden || slides.length < 2) return;
+  carousel?.classList.remove("is-paused");
   showSlide(activeSlide);
   carouselTimer = window.setTimeout(() => {
     showSlide(activeSlide + 1);
