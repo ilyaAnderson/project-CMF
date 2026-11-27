@@ -1,6 +1,7 @@
 import * as T from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { canvasTexture, cylinder, finish, part, ring } from './geometry';
+import { box, canvasTexture, cylinder, finish, part } from './geometry';
+import { grained } from './materials';
 
 const noise = (x: number, y: number) => {
   const value = Math.sin(x * 125.21 + y * 156.73) * 43758.5453;
@@ -49,7 +50,7 @@ export function createBudsLocations() {
   floorGeometry.rotateX(-Math.PI / 2);
   const floorVertices = floorGeometry.getAttribute('position');
   const shades: number[] = [];
-  const basalt = new T.Color(0x30252a);
+  const basalt = new T.Color(0x242b30);
   for (let i = 0; i < floorVertices.count; i++) {
     const x = floorVertices.getX(i), z = floorVertices.getZ(i);
     const fine = noise(x, z);
@@ -60,7 +61,7 @@ export function createBudsLocations() {
   }
   floorGeometry.setAttribute('color', new T.Float32BufferAttribute(shades, 3));
   floorGeometry.computeVertexNormals();
-  part(terrain, floorGeometry, new T.MeshStandardMaterial({ vertexColors: true, roughness: .94, metalness: .11 }));
+  part(terrain, floorGeometry, grained({ vertexColors: true, roughness: .93, metalness: .12 }, 48, .61));
 
   const rockGeometry: T.BufferGeometry[] = [];
   for (let i = 0; i < 77; i++) {
@@ -83,52 +84,37 @@ export function createBudsLocations() {
   }
   const rocks = mergeGeometries(rockGeometry);
   rockGeometry.forEach(geometry => geometry.dispose());
-  part(terrain, rocks, finish(0x262327, .87, .14));
+  part(terrain, rocks, grained({ color: 0x212629, roughness: .87, metalness: .12 }, 63, .58));
 
-  const obsidian = finish(0x242024, .42, .38);
-  cylinder(terrain, obsidian, 1.49, 1.68, .58, 0, -.622, 0);
-  const band = ring(terrain, finish(0x944121, .35, .57), 1.475, .012, 0, -.369, 0);
-  band.rotation.x = Math.PI / 2;
-  softShadow(terrain, 0, -.329, 0, 2.94, 2.94, .65);
+  const obsidian = grained({ color: 0x202223, roughness: .62, metalness: .29 }, 67, .47);
+  const rockBase = part(terrain, new T.IcosahedronGeometry(1.9, 3), obsidian, .09, -.86, -.14);
+  rockBase.scale.set(1.13, .34, .94);
+  softShadow(terrain, 0, -.378, 0, 3.0, 2.94, .58);
 
   const gallery = new T.Group();
-  const floor = finish(0x3d221c, .60, .32);
-  const light = new T.MeshBasicMaterial({ color: 0xe3653b, toneMapped: false });
-  const concrete = finish(0x97503c, .57, .22);
-  const dark = finish(0x2b1b19, .53, .36);
-  const galleryFloor = part(gallery, new T.PlaneGeometry(72, 72), floor, 0, -.94, 0);
+  const bleached = grained({ color: 0x918f8a, roughness: .54, metalness: .28 }, 99, .37);
+  const fluting = grained({ color: 0x262628, roughness: .61, metalness: .37 }, 60, .41, 4);
+  const black = finish(0x171719, .40, .44);
+  const galleryFloor = part(gallery, new T.PlaneGeometry(72, 72), fluting, 0, -1.39, 0);
   galleryFloor.rotation.x = -Math.PI / 2;
-  for (let i = 0; i < 5; i++) {
-    const radius = 2.11 + i * .73;
-    const track = ring(gallery, i % 2 === 0 ? light : concrete, radius, i % 2 === 0 ? .014 : .029, 0, -.918, 0);
-    track.rotation.x = Math.PI / 2;
-  }
-  cylinder(gallery, dark, 2.04, 2.47, .28, 0, -.795, 0);
-  cylinder(gallery, concrete, 1.66, 1.68, .35, 0, -.49, 0);
-  cylinder(gallery, dark, 1.735, 1.72, .11, 0, -.306, 0);
-  softShadow(gallery, 0, -.246, 0, 3.3, 3.3);
-  for (let i = 0; i < 4; i++) {
-    const arch = part(gallery, new T.TorusGeometry(3.25, .17 + i * .022, 8, 48, Math.PI), concrete, 0, -.92, -4.6 - i * 2.35);
-    arch.scale.set(1.35, 1.42, 1);
-    part(gallery, new T.TorusGeometry(3.25, .021, 6, 48, Math.PI), light, 0, -.92, -4.41 - i * 2.35)
-      .scale.copy(arch.scale);
+  cylinder(gallery, black, 1.87, 1.87, 1.01, 0, -.89, 0, 'y', 96);
+  cylinder(gallery, bleached, 1.86, 1.86, .037, 0, -.367, 0, 'y', 96);
+  cylinder(gallery, black, 1.21, 1.21, .60, 2.38, -1.07, -1.42, 'y', 72);
+  cylinder(gallery, bleached, 1.205, 1.198, .035, 2.38, -.754, -1.42, 'y', 72);
+  softShadow(gallery, 0, -.345, 0, 3.4, 3.36, .84);
+  for (let i = 0; i < 12; i++) {
+    cylinder(gallery, i % 4 === 0 ? black : fluting, .38, .38, 7.1, -7.5 + i * 1.1, 1.8, -5.4 - Math.sin(i * .81), 'y', 22);
   }
   return { terrain, gallery };
 }
 
 export function createStudio() {
   const studio = new T.Group();
-  const surface = finish(0x242326, .60, .31);
-  const border = finish(0x625151, .38, .51);
-  const floor = part(studio, new T.PlaneGeometry(82, 82), surface, 0, -.53, 0);
+  const surface = grained({ color: 0x353639, roughness: .71, metalness: .15 }, 53, .10);
+  const border = finish(0x28282a, .51, .39);
+  const floor = part(studio, new T.PlaneGeometry(100, 39), surface, 13, -1.10, 0);
   floor.rotation.x = -Math.PI / 2;
-  for (const z of [-4.2, 5.8, 7.5]) {
-    part(studio, new T.BoxGeometry(24, .025, .014), border, 0, -.52, z);
-  }
-  for (const x of [-5.6, -1.48, 4.95]) {
-    part(studio, new T.BoxGeometry(.015, .025, 16), border, x, -.52, .8);
-  }
-  softShadow(studio, -.4, -.51, 2.6, 9, 6, .48);
-  const phoneShadow = softShadow(studio, 2.37, -.509, -1.57, 3.95, 5.6, .72);
+  for (const z of [-13, -7.5, 6.5]) box(studio, border, 95, .025, .023, .008, 15, -1.089, z);
+  const phoneShadow = softShadow(studio, 29.46, -1.075, 0, 7.0, 3.7, .55);
   return { studio, phoneShadow };
 }

@@ -251,13 +251,43 @@ document.querySelector("#checkout-button")?.addEventListener("click", () => {
 renderCart();
 
 const showcaseTrack = document.querySelector(".showcase-track");
-if (showcaseTrack && "IntersectionObserver" in window) {
-  const prepareShowcase = new IntersectionObserver(([entry], observer) => {
-    if (!entry.isIntersecting) return;
-    observer.disconnect();
-    import("./showcase.js").then(({ mount }) => mount(showcaseTrack)).catch(() => {
-      // Keep the HTML preview and product links available if the bundle fails to load.
+const showcaseLoading = document.querySelector("#showcase-loading");
+if (showcaseTrack && showcaseLoading) {
+  const controller = new AbortController();
+  const status = showcaseLoading.querySelector("#showcase-loading-status");
+  const progress = showcaseLoading.querySelector("#showcase-loading-progress");
+  const skip = showcaseLoading.querySelector("#showcase-loading-skip");
+  const content = [...document.querySelectorAll("body > header, body > main, body > footer")];
+
+  function closeLoading() {
+    clearTimeout(loadTimeout);
+    showcaseLoading.hidden = true;
+    document.documentElement.classList.remove("is-showcase-loading");
+    content.forEach((element) => { element.inert = false; });
+  }
+
+  function skipLoading() {
+    const shouldRestoreFocus = document.activeElement === skip;
+    controller.abort();
+    closeLoading();
+    if (shouldRestoreFocus) document.querySelector(".brand")?.focus({ preventScroll: true });
+  }
+
+  const loadTimeout = window.setTimeout(skipLoading, 22000);
+  skip.addEventListener("click", skipLoading, { once: true });
+  document.documentElement.classList.add("is-showcase-loading");
+  content.forEach((element) => { element.inert = true; });
+  showcaseLoading.hidden = false;
+
+  import("./showcase.js").then(({ mount }) => {
+    mount(showcaseTrack, {
+      signal: controller.signal,
+      step(message) {
+        if (controller.signal.aborted) return;
+        status.textContent = message;
+        progress.value += 1;
+      },
+      done: closeLoading,
     });
-  }, { rootMargin: "260px" });
-  prepareShowcase.observe(showcaseTrack);
+  }).catch(closeLoading);
 }

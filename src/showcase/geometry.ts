@@ -109,3 +109,15 @@ export function screw(parent: T.Object3D, metal: T.Material, dark: T.Material, x
   const cut = box(parent, dark, radius * 1.3, radius * .2, .006, .002, x, y, z + .008);
   cut.rotation.z = x + y + .4;
 }
+
+export function extrusion(
+  parent: T.Object3D, material: T.Material, shape: T.Shape, thickness: number, bevel: number,
+  x = 0, y = 0, z = 0,
+) {
+  const geometry = new T.ExtrudeGeometry(shape, {
+    depth: thickness - bevel * 2,
+    bevelEnabled: bevel > 0, bevelSegments: 5, bevelSize: bevel, bevelThickness: bevel, curveSegments: 14,
+  });
+  geometry.translate(0, 0, -thickness / 2 + bevel);
+  return part(parent, geometry, material, x, y, z);
+}

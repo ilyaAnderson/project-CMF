@@ -12,26 +12,30 @@ export function createWatchDisplay() {
     ctx.font = '600 22px sans-serif';
     ctx.fillText(mode === 0 ? 'ПН  24' : mode === 1 ? 'БЕГ · GPS' : 'ВХОДЯЩИЙ', 45, 70);
     if (mode === 0) {
-      const colors = ['#e8e1dc', '#fe5b2b'];
-      for (let i = 0; i < 60; i++) {
-        const angle = i / 60 * Math.PI * 2 - Math.PI / 2;
-        const size = i % 5 === 0 ? 11 : 4;
-        ctx.strokeStyle = i < 42 ? colors[1] : '#533125';
-        ctx.lineWidth = i % 5 === 0 ? 3 : 2;
-        ctx.beginPath();
-        ctx.moveTo(205 + Math.cos(angle) * 160, 263 + Math.sin(angle) * 160);
-        ctx.lineTo(205 + Math.cos(angle) * (160 - size), 263 + Math.sin(angle) * (160 - size));
-        ctx.stroke();
-      }
-      ctx.fillStyle = colors[0];
-      ctx.font = '700 83px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('10:08', 205, 282);
+      ctx.fillStyle = '#929298';
+      ctx.beginPath();
+      ctx.arc(205, 232, 155, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#161616';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(205, 232);
+      ctx.lineTo(158, 361);
+      ctx.stroke();
+      ctx.fillStyle = '#161616';
+      ctx.beginPath();
+      ctx.arc(205, 232, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.font = '600 50px monospace';
+      ctx.fillText('10:08', 97, 181);
+      ctx.fillStyle = '#fa4c21';
+      ctx.beginPath();
+      ctx.arc(296, 164, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#e2dfdb';
       ctx.font = '500 21px sans-serif';
-      ctx.fillText('♥  72', 205, 330);
-      ctx.textAlign = 'left';
-      ctx.fillStyle = '#ff774b';
-      ctx.fillRect(162, 451, 86, 4);
+      ctx.fillText('Пульс  72', 65, 442);
+      ctx.fillText('Шаги  6240', 218, 442);
     } else if (mode === 1) {
       ctx.font = '700 67px sans-serif';
       ctx.fillStyle = '#f5eeea';
@@ -88,18 +92,18 @@ export function createWatchDisplay() {
 
 export function createPhoneDisplay() {
   const { context: ctx, texture } = canvasTexture(420, 890);
-  const wash = ctx.createLinearGradient(0, 0, 420, 890);
-  wash.addColorStop(0, '#171413');
-  wash.addColorStop(.47, '#29100c');
-  wash.addColorStop(1, '#09090a');
-  ctx.fillStyle = wash;
+  ctx.fillStyle = '#0c0d0e';
   ctx.fillRect(0, 0, 420, 890);
-  for (let i = 0; i < 12; i++) {
-    ctx.strokeStyle = `rgba(255, ${58 + i * 7}, ${17 + i * 3}, ${.87 - i * .052})`;
-    ctx.lineWidth = 6;
-    ctx.beginPath();
-    ctx.ellipse(327, 590, 200 + i * 12, 85 + i * 10, -.72, 0, Math.PI * 2);
-    ctx.stroke();
+  for (let y = 0; y < 52; y++) {
+    for (let x = 0; x < 38; x++) {
+      const distance = Math.hypot(x - 20, (y - 27) * 1.05);
+      const band = .44 + .56 * Math.cos(distance * .64 + y * .31);
+      if (distance > 22 || band < .33) continue;
+      ctx.fillStyle = `rgba(225,216,211,${(1 - distance / 24) * band * .83})`;
+      ctx.beginPath();
+      ctx.arc(22 + x * 10, 309 + y * 10, 1.85, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
   ctx.fillStyle = '#fcf1e9';
   ctx.font = '700 93px sans-serif';

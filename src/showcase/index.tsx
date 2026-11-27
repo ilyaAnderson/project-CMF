@@ -1,18 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { chapters, getChapter } from './chapters';
+import { chapters, editorialBeats, steppedIndex } from './chapters';
 import { watchModes } from './displays';
-import { createScene, sceneVeil } from './scene';
+import { createScene, loadShowcaseTextures, sceneVeil } from './scene';
 
 const clamp = (value: number) => Math.max(0, Math.min(value, 1));
 
 const fallbackImages = [
-  'material/fb91c1a17d330ca059d103e384a6119f.png',
-  'material/showcase-cable.webp',
-  'material/showcase-phone.webp',
+  'material/showcase/buds-pro-2.webp',
+  'material/showcase/neckband-orange.webp',
+  'material/showcase/phone-back.webp',
   'material/showcase-board.webp',
-  'material/9111f6ef15fec70092e2f92908c5e1bb.png',
+  'material/showcase/watch-pro.webp',
 ];
+
+type Loading = {
+  signal: AbortSignal;
+  step: (message: string) => void;
+  done: () => void;
+};
 
 const watchScreenDescriptions = [
   'Циферблат с часами, датой и показателем пульса.',
@@ -20,12 +26,13 @@ const watchScreenDescriptions = [
   'Входящий звонок со смартфона, подключённого по Bluetooth.',
 ];
 
-function Showcase({ track }: { track: HTMLElement }) {
+function Showcase({ track, loading }: { track: HTMLElement; loading: Loading }) {
   const [active, setActive] = useState(0);
+  const [beat, setBeat] = useState(0);
   const [mode, setMode] = useState(0);
   const [hasScene, setHasScene] = useState(false);
   const [reduced, setReduced] = useState(matchMedia('(prefers-reduced-motion: reduce)').matches);
-  const frame = useRef({ progress: 0, display: 0, manual: false, buttonAt: -Infinity, active: 0 });
+  const frame = useRef({ progress: 0, display: 0, manual: false, buttonAt: -Infinity, active: 0, beat: 0 });
   const queue = useRef<() => void>(() => {});
   const graph = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLDivElement>(null);
@@ -42,15 +49,38 @@ function Showcase({ track }: { track: HTMLElement }) {
     let dirty = true;
     let lastTime = performance.now();
 
-    try {
-      scene = createScene(host);
-    } catch {
-      setHasScene(false);
+    let ready = false;
+    let disposed = false;
+
+    async function initialize() {
+      if (loading.signal.aborted) return;
+      loading.step('Текстуры устройств');
+      const texture = await loadShowcaseTextures();
+      if (loading.signal.aborted || disposed) {
+        texture?.dispose();
+        return;
+      }
+      try {
+        scene = createScene(host, texture);
+        scene.canvas.addEventListener('webglcontextlost', stopScene);
+        resize();
+        await scene.prepare(loading.step);
+        if (disposed || loading.signal.aborted || !scene) return;
+        ready = true;
+        setHasScene(true);
+        scene.render({ progress: 0, display: 0, overrideDisplay: true, press: 0 });
+        updateMode();
+      } catch {
+        if (scene) stopScene();
+        else texture?.dispose();
+      } finally {
+        loading.done();
+      }
     }
 
     function updateMode() {
       setReduced(media.matches);
-      track.classList.toggle('is-pinned', Boolean(scene) && !media.matches);
+      track.classList.toggle('is-pinned', ready && !media.matches);
       dirty = true;
       schedule();
     }
@@ -60,7 +90,7 @@ function Showcase({ track }: { track: HTMLElement }) {
       const view = scene;
       const previousTime = lastTime;
       lastTime = now;
-      if (!view) return;
+      if (!view || !ready) return;
       const state = frame.current;
       const pinned = !media.matches;
       const distance = Math.max(1, track.offsetHeight - pin.offsetHeight);
@@ -71,14 +101,20 @@ function Showcase({ track }: { track: HTMLElement }) {
       state.progress = pinned && Math.abs(target - oldProgress) > .0007
         ? oldProgress + (target - oldProgress) * (1 - Math.exp(-elapsed / 74))
         : target;
-      const activeChapter = pinned ? getChapter(state.progress) : state.active;
+      const activeChapter = pinned ? steppedIndex(chapters, state.progress) : state.active;
       if (activeChapter !== state.active) {
         state.active = activeChapter;
         state.manual = false;
         setActive(activeChapter);
       }
 
-      const autoScreen = pinned && state.progress > .948 ? 2 : pinned && state.progress > .889 ? 1 : 0;
+      const activeBeat = steppedIndex(editorialBeats, state.progress);
+      if (activeBeat !== state.beat) {
+        state.beat = activeBeat;
+        setBeat(activeBeat);
+      }
+
+      const autoScreen = pinned && state.progress > .969 ? 2 : pinned && state.progress > .940 ? 1 : 0;
       if (!state.manual && state.display !== autoScreen) {
         state.display = autoScreen;
         setMode(autoScreen);
@@ -101,7 +137,7 @@ function Showcase({ track }: { track: HTMLElement }) {
     }
 
     function schedule() {
-      if (!raf && near && scene) raf = requestAnimationFrame(onFrame);
+      if (!raf && near && scene && ready) raf = requestAnimationFrame(onFrame);
     }
 
     function stopScene() {
@@ -109,6 +145,7 @@ function Showcase({ track }: { track: HTMLElement }) {
       scene.canvas.removeEventListener('webglcontextlost', stopScene);
       scene.dispose();
       scene = undefined;
+      ready = false;
       track.classList.remove('is-pinned');
       setHasScene(false);
     }
@@ -124,10 +161,8 @@ function Showcase({ track }: { track: HTMLElement }) {
       dirty = true;
       schedule();
     };
-    if (scene) {
-      setHasScene(true);
-      scene.canvas.addEventListener('webglcontextlost', stopScene);
-    }
+    loading.signal.addEventListener('abort', stopScene, { once: true });
+    void initialize();
 
     const visibility = new IntersectionObserver(([entry]) => {
       near = entry.isIntersecting;
@@ -148,6 +183,8 @@ function Showcase({ track }: { track: HTMLElement }) {
     resize();
 
     return () => {
+      disposed = true;
+      loading.signal.removeEventListener('abort', stopScene);
       cancelAnimationFrame(raf);
       visibility.disconnect();
       sizes.disconnect();
@@ -158,7 +195,7 @@ function Showcase({ track }: { track: HTMLElement }) {
       track.classList.remove('is-pinned');
       queue.current = () => {};
     };
-  }, [track]);
+  }, [track, loading]);
 
   function openChapter(index: number) {
     const chapter = chapters[index];
@@ -171,6 +208,7 @@ function Showcase({ track }: { track: HTMLElement }) {
       frame.current.active = index;
       frame.current.manual = false;
       setActive(index);
+      setBeat(steppedIndex(editorialBeats, chapter.stop));
       setMode(0);
       queue.current();
     }
@@ -185,16 +223,22 @@ function Showcase({ track }: { track: HTMLElement }) {
     queue.current();
   }
 
-  const chapter = chapters[active];
+  const chapter = editorialBeats[beat];
   return (
     <div className="showcase-frame" data-chapter={active} ref={stage}>
       <div className="showcase-render" ref={graph} aria-hidden="true" />
       {!hasScene && <img className="showcase-poster" src={fallbackImages[active]} alt="" />}
       <div className="showcase-veil" ref={veil} aria-hidden="true" />
       <div className="showcase-shade" aria-hidden="true" />
+      {hasScene && chapter.photo && (
+        <figure className="showcase-inset">
+          <img src={chapter.photo} alt={chapter.caption} width={760} height={760} decoding="async" />
+          <figcaption>{chapter.caption}</figcaption>
+        </figure>
+      )}
       <div className="showcase-copy">
-        <div className="showcase-story" key={chapter.label}>
-          <p className="showcase-product">{chapter.product}</p>
+        <div className="showcase-story" key={chapter.start}>
+          {chapter.title !== chapter.product && <p className="showcase-product">{chapter.product}</p>}
           <h3>{chapter.title}</h3>
           <p className="showcase-description">{chapter.body}</p>
         </div>
@@ -217,7 +261,7 @@ function Showcase({ track }: { track: HTMLElement }) {
   );
 }
 
-export function mount(track: HTMLElement) {
+export function mount(track: HTMLElement, loading: Loading) {
   const root = track.querySelector('.showcase-pin');
-  if (root) createRoot(root).render(<Showcase track={track} />);
+  if (root) createRoot(root).render(<Showcase track={track} loading={loading} />);
 }
