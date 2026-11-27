@@ -249,3 +249,15 @@ document.querySelector("#checkout-button")?.addEventListener("click", () => {
 }));
 
 renderCart();
+
+const showcaseTrack = document.querySelector(".showcase-track");
+if (showcaseTrack && "IntersectionObserver" in window) {
+  const prepareShowcase = new IntersectionObserver(([entry], observer) => {
+    if (!entry.isIntersecting) return;
+    observer.disconnect();
+    import("./showcase.js").then(({ mount }) => mount(showcaseTrack)).catch(() => {
+      // Keep the HTML preview and product links available if the bundle fails to load.
+    });
+  }, { rootMargin: "260px" });
+  prepareShowcase.observe(showcaseTrack);
+}
