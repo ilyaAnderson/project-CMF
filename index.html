@@ -10,12 +10,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="css.css">
     <link rel="stylesheet" href="commerce.css">
+    <link rel="stylesheet" href="showcase.css">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Doto:wght@400;500;600;700&family=Google+Sans+Flex:opsz,wght@6..144,400;6..144,500;6..144,600;6..144,700&display=swap" rel="stylesheet">
 </head>
 <body>
 <header>
     <a class="brand" href="#top" aria-label="CMF Store — наверх"><span class="brand-mark">C</span><span>CMF</span></a>
-    <a id="menu" href="#product-collections">КОЛЛЕКЦИЯ</a>
+    <nav class="cmf-menu" aria-label="По сайту">
+        <a href="#showcase">3D-ОБЗОР</a>
+        <a id="menu" href="#product-collections">КОЛЛЕКЦИЯ</a>
+    </nav>
     <button class="shop" type="button" aria-label="Открыть корзину">
         <img src="material/icons8-тележка-64 White.png" alt="">
         <span class="cart-count" aria-live="polite">0</span>
@@ -60,7 +64,52 @@
         </div>
         <button class="slider-arrow slider-next" type="button" aria-label="Следующий слайд">›</button>
     </div>
-</main>
+<section class="showcase" id="showcase" aria-labelledby="showcase-title">
+    <div class="showcase-intro">
+        <h2 id="showcase-title">Устройства CMF<br>в деталях</h2>
+        <div class="showcase-intro-meta">
+            <p>Прокрутите страницу, чтобы открыть кейс Buds Pro, подключиться к Phone 1 и заглянуть внутрь Watch Pro.</p>
+            <a href="#showcase-selection">К выбору устройства <span aria-hidden="true">↓</span></a>
+        </div>
+    </div>
+    <div class="showcase-track">
+        <div class="showcase-pin">
+            <div class="showcase-frame">
+                <img class="showcase-poster" src="material/fb91c1a17d330ca059d103e384a6119f.png" alt="">
+                <div class="showcase-shade" aria-hidden="true"></div>
+                <div class="showcase-copy">
+                    <p class="showcase-product">CMF Buds Pro</p>
+                    <h3>От кейса к звуку</h3>
+                    <p class="showcase-description">Активное шумоподавление до 45 дБ. До 11 часов музыки с выключенным шумоподавлением.</p>
+                    <a class="showcase-link" href="#case">Выбрать цвет <span aria-hidden="true">↗</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="showcase-selection" id="showcase-selection">
+        <h2>Выберите своё устройство</h2>
+        <div class="showcase-editions">
+            <article class="showcase-edition">
+                <img src="material/fb91c1a17d330ca059d103e384a6119f.png" alt="" width="324" height="324" loading="lazy" decoding="async">
+                <h3>Buds Pro</h3>
+                <p>До 39 часов с зарядным кейсом при выключенном шумоподавлении.</p>
+                <a href="#case">Цвета и цена <span aria-hidden="true">↗</span></a>
+            </article>
+            <article class="showcase-edition" id="showcase-phone">
+                <img src="material/showcase-phone.webp" alt="" width="324" height="324" loading="lazy" decoding="async">
+                <h3>Phone 1</h3>
+                <p>Сменная задняя панель, экран 120 Гц и аккумулятор 5000 мА·ч.</p>
+                <a href="https://intl.nothing.tech/products/cmf-phone-1">На сайте Nothing <span aria-hidden="true">↗</span></a>
+            </article>
+            <article class="showcase-edition">
+                <img src="material/9111f6ef15fec70092e2f92908c5e1bb.png" alt="" width="324" height="324" loading="lazy" decoding="async">
+                <h3>Watch Pro</h3>
+                <p>AMOLED 1,96″, встроенный GPS и звонки по Bluetooth.</p>
+                <a href="#watch">Цвета и цена <span aria-hidden="true">↗</span></a>
+            </article>
+        </div>
+    </div>
+</section>
 <section class="blockproduct" id="product-collections" aria-label="Каталог">
     <div class="products">
         <article id="head" class="watch product-card" data-product-id="neckband-pro" data-product-name="Neckband Pro" data-product-price="3990">
@@ -119,6 +168,7 @@
         <article class="block"><h3>Выбор</h3><p>Сравнивайте модели и переключайте цвет прямо на странице.</p></article>
     </section>
 </section>
+</main>
 <div class="blockdisain">
         <div class="leftorang"></div>
         <div class="righttext"><p id="HD">ПРЕКРАСНЫЙ ДИЗАЙН</p> <br> Мы, дизайнеры, обязаны задавать вопросы миру. <br> Предметы, которые нас окружают, их истинное значение. <br>Они содержат в себе технологии. <br>Это сущность нашего повседневного существования. <br>
