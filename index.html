@@ -10,24 +10,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="css.css">
     <link rel="stylesheet" href="commerce.css">
-    <link rel="stylesheet" href="showcase.css">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Doto:wght@400;500;600;700&family=Google+Sans+Flex:opsz,wght@6..144,400;6..144,500;6..144,600;6..144,700&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="showcase-loading" id="showcase-loading" hidden>
-    <div class="showcase-loading-panel">
-        <p class="showcase-loading-mark">CMF</p>
-        <p id="showcase-loading-status" role="status">Подготовка 3D-обзора</p>
-        <progress id="showcase-loading-progress" max="5" value="0" aria-label="Загрузка 3D-обзора"></progress>
-        <button id="showcase-loading-skip" type="button">Продолжить без 3D</button>
-    </div>
-</div>
 <header>
     <a class="brand" href="#top" aria-label="CMF Store — наверх"><span class="brand-mark">C</span><span>CMF</span></a>
-    <nav class="cmf-menu" aria-label="По сайту">
-        <a href="#showcase">3D-ОБЗОР</a>
-        <a id="menu" href="#product-collections">КОЛЛЕКЦИЯ</a>
-    </nav>
+    <a id="menu" href="#product-collections">КОЛЛЕКЦИЯ</a>
     <button class="shop" type="button" aria-label="Открыть корзину">
         <img src="material/icons8-тележка-64 White.png" alt="">
         <span class="cart-count" aria-live="polite">0</span>
@@ -72,58 +60,7 @@
         </div>
         <button class="slider-arrow slider-next" type="button" aria-label="Следующий слайд">›</button>
     </div>
-<section class="showcase" id="showcase" aria-labelledby="showcase-title">
-    <div class="showcase-intro">
-        <h2 id="showcase-title">CMF и Nothing<br>в деталях</h2>
-        <div class="showcase-intro-meta">
-            <p>Прокрутите страницу, чтобы открыть кейс Buds Pro 2, пройти вдоль шейного обода Neckband Pro и заглянуть внутрь Watch Pro.</p>
-            <a href="#showcase-selection">К выбору устройства <span aria-hidden="true">↓</span></a>
-        </div>
-    </div>
-    <div class="showcase-track">
-        <div class="showcase-pin">
-            <div class="showcase-frame">
-                <img class="showcase-poster" src="material/showcase/buds-pro-2.webp" alt="">
-                <div class="showcase-shade" aria-hidden="true"></div>
-                <div class="showcase-copy">
-                    <p class="showcase-product">CMF</p>
-                    <h3>Buds Pro 2</h3>
-                    <p class="showcase-description">Два динамика в каждом наушнике. Колёсико Smart Dial на кейсе.</p>
-                    <a class="showcase-link" href="#showcase-buds">О модели <span aria-hidden="true">↗</span></a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="showcase-selection" id="showcase-selection">
-        <h2>Выберите своё устройство</h2>
-        <div class="showcase-editions">
-            <article class="showcase-edition" id="showcase-phone">
-                <img src="material/showcase/phone-back.webp" alt="Белый Nothing Phone (3), вид сзади" width="710" height="1492" loading="lazy" decoding="async">
-                <h3>Nothing Phone (3)</h3>
-                <p>Glyph Matrix и система из четырёх камер по 50 Мп, включая фронтальную.</p>
-                <a href="https://intl.nothing.tech/products/phone-3">На сайте Nothing <span aria-hidden="true">↗</span></a>
-            </article>
-            <article class="showcase-edition" id="showcase-buds">
-                <img src="material/showcase/buds-pro-2.webp" alt="Оранжевые Buds Pro 2 с кейсом Smart Dial" width="760" height="760" loading="lazy" decoding="async">
-                <h3>CMF Buds Pro 2</h3>
-                <p>Двойные динамики и активное шумоподавление до 50 дБ.</p>
-                <a href="https://intl.nothing.tech/products/cmf-buds-pro-2">На сайте Nothing <span aria-hidden="true">↗</span></a>
-            </article>
-            <article class="showcase-edition">
-                <img src="material/showcase/neckband-orange.webp" alt="Оранжевые Neckband Pro с шейным ободом" width="760" height="760" loading="lazy" decoding="async">
-                <h3>CMF Neckband Pro</h3>
-                <p>Шейный обод и колёсико громкости. До 37 часов музыки без шумоподавления.</p>
-                <a href="#head">Цвета и цена <span aria-hidden="true">↗</span></a>
-            </article>
-            <article class="showcase-edition">
-                <img src="material/showcase/watch-pro.webp" alt="Чёрные CMF Watch Pro с чёрным ремешком" width="700" height="795" loading="lazy" decoding="async">
-                <h3>CMF Watch Pro</h3>
-                <p>AMOLED 1,96″, встроенный GPS и звонки по Bluetooth.</p>
-                <a href="#watch">Цвета и цена <span aria-hidden="true">↗</span></a>
-            </article>
-        </div>
-    </div>
-</section>
+</main>
 <section class="blockproduct" id="product-collections" aria-label="Каталог">
     <div class="products">
         <article id="head" class="watch product-card" data-product-id="neckband-pro" data-product-name="Neckband Pro" data-product-price="3990">
@@ -176,16 +113,19 @@
             <div class="product-actions"><button class="details-button" type="button" data-open-product>Подробнее</button><button class="product-detail-button" type="button" data-add-to-cart>В корзину</button></div>
         </article>
     </div>
+    <section class="lorem" aria-label="Особенности коллекции">
+        <article class="block"><h3>Цвет</h3><p>Яркие оттенки помогают сделать повседневную технику частью личного стиля.</p></article>
+        <article class="block"><h3>Форма</h3><p>Лаконичные корпуса и понятные детали без лишнего визуального шума.</p></article>
+        <article class="block"><h3>Выбор</h3><p>Сравнивайте модели и переключайте цвет прямо на странице.</p></article>
+    </section>
 </section>
-</main>
 <div class="blockdisain">
         <div class="leftorang"></div>
-        <div class="righttext">
-            <h2 id="HD">Цвет, материал, отделка</h2>
-            <p>CMF — линейка Nothing. В каталоге можно сравнить цвета наушников и часов и добавить выбранный вариант в корзину.</p>
-        </div>
+        <div class="righttext"><p id="HD">ПРЕКРАСНЫЙ ДИЗАЙН</p> <br> Мы, дизайнеры, обязаны задавать вопросы миру. <br> Предметы, которые нас окружают, их истинное значение. <br>Они содержат в себе технологии. <br>Это сущность нашего повседневного существования. <br>
+        Но если технологии так важны для нас, почему бы нам не гордиться тем, как <br>они выглядят?<br>Что мы будем чувствовать?<br><br>Давайте сделаем отличный дизайн доступным для всех. <br>Создавая продуманные устройства, которые одновременно отлично выглядят <br>и функциональны. <br>Это может служить источником радости и самовыражения. <br><br>Мы отвергаем безразличие. Тщательно продумываем каждую деталь. Цвет. <br>Материал. Обработку. <br>
+    <br>Чтобы сделать необходимое прекрасным. <br> Квинтэссенция прекрасного.</div>
     </div>
-    <div class="notext">Учебная витрина CMF и Nothing</div>
+    <div class="notext">Это учебная копия сайта для демонстрации навыков верстки</div>
     <footer>
         <div class="rightbox">
             <div class="firstbox">
