@@ -1,1 +1,4 @@
 node_modules/
+
+# Blender autosave backups
+*.blend[1-9]

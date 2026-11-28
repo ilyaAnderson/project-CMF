@@ -2,14 +2,10 @@ import * as T from 'three';
 import { ball, box, canvasTexture, cylinder, extrusion, finish, panelGeometry, part, ring, roundedShape, vector } from './geometry';
 import { grained } from './materials';
 import { createPhoneDisplay } from './displays';
-import { portX, portY } from './audio';
 
 export const phoneLength = 3.66;
-export const phoneCenter = vector(portX + phoneLength / 2, portY, 0);
+export const phoneCenter = vector(27.8, .49, 0);
 const width = 1.747;
-const rest = new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(
-  vector(0, 0, 1), vector(1, 0, 0), vector(0, 1, 0),
-));
 const lacquer = grained({
   color: 0xd2d4d6, roughness: .24, metalness: .54, clearcoat: .31, clearcoatRoughness: .19,
 }, 184, .10, 3);
@@ -46,13 +42,16 @@ export function createPhone(backTexture?: T.Texture) {
   });
   const rearGlass = part(device, rear.geometry, clearBack, 0, 0, -.111);
   rearGlass.rotation.y = Math.PI;
+  const anchors: Record<string, T.Object3D> = {};
+  const lenses = ['camera-tele', 'camera-main', 'camera-wide'];
+  let lensIndex = 0;
   for (const [x, y, radius, folded] of [[.618, 1.439, .169, 1], [.515, .953, .177, 0], [-.006, .953, .177, 0]]) {
     cylinder(device, steel, radius + .018, radius + .023, .054, x, y, -.13, 'z', 80);
     cylinder(device, black, radius, radius + .007, .072, x, y, -.164, 'z', 80);
     ring(device, black, radius * .74, .016, x, y, -.203);
     if (folded) box(device, black, .133, .139, .026, .018, x, y, -.198);
     ball(device, lens, radius * .35, radius * .35, .025, x, y, -.204);
-    ring(device, lens, radius * .37, .005, x, y, -.222);
+    anchors[lenses[lensIndex++]] = ring(device, lens, radius * .37, .005, x, y, -.222);
   }
 
   const { context, texture } = canvasTexture(320, 320);
@@ -60,8 +59,12 @@ export function createPhone(backTexture?: T.Texture) {
   cylinder(device, black, .262, .260, .034, -.526, 1.475, -.119, 'z', 96);
   const matrix = part(device, new T.CircleGeometry(.250, 96), glyph, -.526, 1.475, -.139);
   matrix.rotation.y = Math.PI;
+  anchors.glyph = matrix;
   const outline = ring(device, steel, .256, .008, -.526, 1.475, -.140);
   outline.rotation.y = Math.PI;
+  const glyphPixels = Array.from({ length: 625 }, (_, index) => [index % 25, Math.floor(index / 25)])
+    .sort(([a, b], [x, y]) => Math.hypot(a - 12, b - 12) - Math.hypot(x - 12, y - 12))
+    .slice(0, 489);
   let lastFrame = -1;
 
   function glyphFrame(progress: number) {
@@ -70,14 +73,19 @@ export function createPhone(backTexture?: T.Texture) {
     lastFrame = frame;
     context.fillStyle = '#131413';
     context.fillRect(0, 0, 320, 320);
-    const pitch = 10, midpoint = 15;
-    for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) {
-      if (Math.hypot(x - 15.5, y - 15.5) > 14.6) continue;
-      const peak = Math.max(0, 1 - Math.abs(x - 15) / 14);
-      const wave = Math.abs(Math.sin((x + frame * .87) * 1.20) + Math.sin(x * .41 + frame * .24) * .58);
-      context.fillStyle = Math.abs(y - midpoint) < (wave * peak * 7 + .66) ? '#fff7e2' : '#282929';
-      context.fillRect(x * pitch + 1, y * pitch + 1, 7, 7);
-    }
+    const points = glyphPixels;
+    points.forEach(([x, y]) => {
+      const dx = x - 12, dy = y - 12;
+      const r = Math.hypot(dx, dy);
+      const envelope = Math.max(0, 1 - Math.abs(dx) / 13);
+      const wave = Math.abs(Math.sin(dx * 1.32 + frame * .45) + Math.cos(dx * .54 - frame * .28) * .52);
+      const lit = progress < .55 ? Math.abs(dy) < wave * envelope * 5.5 + .35
+        : Math.abs(r - (6.1 + Math.sin(frame * .4) * 2.3)) < .63;
+      context.fillStyle = lit ? '#fff8e6' : '#292929';
+      context.beginPath();
+      context.arc(16 + x * 12, 16 + y * 12, lit ? 3 : 2.05, 0, Math.PI * 2);
+      context.fill();
+    });
     texture.needsUpdate = true;
   }
 
@@ -91,14 +99,24 @@ export function createPhone(backTexture?: T.Texture) {
     box(device, lacquer, .049, height, .077, .020, x, y, .031);
   }
 
-  const turn = new T.Quaternion();
-  const orientation = new T.Quaternion();
-  function pose(lift: number, spin: number, signal: number) {
-    root.position.set(phoneCenter.x, phoneCenter.y + lift * .55, 0);
-    turn.setFromEuler(new T.Euler(-.14 * lift, spin, -.18 * lift));
-    orientation.copy(rest).slerp(turn, lift);
-    device.quaternion.copy(orientation);
+  const upright = new T.Quaternion();
+  const posture = new T.Quaternion();
+  const roll = new T.Quaternion().setFromAxisAngle(vector(0, 0, 1), -Math.PI / 2);
+  const horizontal = new T.Quaternion().setFromAxisAngle(vector(1, 0, 0), Math.PI / 2).multiply(roll);
+
+  function pose(slide: number, lift: number, spin: number, signal: number) {
+    root.position.set(phoneCenter.x + slide, phoneCenter.y + lift * 1.05, 0);
+    upright.setFromEuler(new T.Euler(-.06, spin, -.035));
+    posture.copy(horizontal).slerp(upright, lift);
+    device.quaternion.copy(posture);
     glyphFrame(signal);
   }
-  return { root, pose };
+
+  function setBackTexture(texture: T.Texture) {
+    backFinish.map = texture;
+    backFinish.color.setHex(0xffffff);
+    backFinish.needsUpdate = true;
+  }
+
+  return { root, pose, anchors, setBackTexture };
 }

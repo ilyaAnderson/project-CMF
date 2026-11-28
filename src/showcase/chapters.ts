@@ -1,62 +1,47 @@
-export type Chapter = {
-  label: string; start: number; stop: number; product: string;
-  title: string; body: string; link: string; action: string;
-};
+export const chapters = [
+  { start: 0, stop: 0, art: 'coast', title: 'Камни и волна', body: 'Кейс Buds Pro 2 на берегу. Волна переносит его в студию.' },
+  { start: .13, stop: .20, art: 'case', title: 'Кейс открывается', body: 'Smart Dial, шарнир и два вкладыша, выходящие из диагональных гнёзд.' },
+  { start: .27, stop: .355, art: 'drivers', title: 'Разбор вкладыша', body: 'Силиконовый амбушюр, 11-мм басовый динамик и 6-мм твитер. Схема условная.' },
+  { start: .41, stop: .53, art: 'neckband', title: 'Длинный проход Neckband Pro', body: 'Гибридное шумоподавление до 50 дБ и подключение по Bluetooth 5.3.' },
+  { start: .61, stop: .73, art: 'phone', title: 'Nothing Phone (3)', body: 'AMOLED 6,67″, три задние камеры по 50 Мп и Glyph Matrix.' },
+  { start: .78, stop: .87, art: 'board', title: 'Камера внутри часов', body: 'Контроллер, чипы и память Watch Pro. Условная визуализация.' },
+  { start: .91, stop: .955, art: 'watch', title: 'Циферблат и финал', body: 'Часы Watch Pro с AMOLED 1,96″. Активность и пульс показаны на демонстрационных данных.' },
+] as const;
 
-export const chapters: Chapter[] = [
-  {
-    label: 'Buds Pro 2', start: 0, stop: .111, product: 'CMF Buds Pro 2',
-    title: 'Два динамика в каждом наушнике',
-    body: '11 мм для басов, 6 мм для высоких частот. Колёсико Smart Dial на кейсе управляет громкостью.',
-    link: '#showcase-buds', action: 'О модели',
-  },
-  {
-    label: 'Neckband', start: .285, stop: .347, product: 'CMF Neckband Pro',
-    title: 'Управление на шейном ободе',
-    body: 'Громкость регулируется колёсиком. До 37 часов музыки при выключенном шумоподавлении.',
-    link: '#head', action: 'Цвета и цена',
-  },
-  {
-    label: 'Phone (3)', start: .451, stop: .572, product: 'Nothing Phone (3)',
-    title: 'Glyph Matrix',
-    body: 'Точечный дисплей на задней панели показывает уведомления и анимации.',
-    link: '#showcase-phone', action: 'О модели',
-  },
-  {
-    label: 'Внутри часов', start: .631, stop: .748, product: 'CMF Watch Pro',
-    title: 'Под дисплеем',
-    body: 'Процессор, флеш-память и радиомодуль. Компоновка платы показана условно.',
-    link: '#watch', action: 'Цвета и цена',
-  },
-  {
-    label: 'AMOLED', start: .880, stop: .916, product: 'CMF Watch Pro',
-    title: 'Экран 1,96″',
-    body: 'AMOLED с разрешением 410 × 502. Переключите циферблат, тренировку или входящий звонок.',
-    link: '#watch', action: 'Цвета и цена',
-  },
-];
+export const beats = [
+  { start: 0, title: 'С берега\nв студию', body: 'Прокрутите, чтобы открыть кейс и рассмотреть четыре устройства.' },
+  { start: .043, title: '', body: '' },
+  { start: .13, title: 'Buds Pro 2', body: 'Два динамика. Один Smart Dial.' },
+  { start: .157, title: 'Smart Dial', body: 'Настройте управление в Nothing X.', anchor: 'dial' },
+  { start: .183, title: '', body: '' },
+  { start: .305, title: 'Амбушюр', body: 'Мягкий силикон.', anchor: 'tip' },
+  { start: .345, title: '11 мм', body: 'Басовый динамик.', anchor: 'woofer' },
+  { start: .385, title: '6 мм', body: 'Твитер для высоких частот.', anchor: 'tweeter' },
+  { start: .41, title: 'Neckband Pro', body: 'Гибкий шейный обод.' },
+  { start: .47, title: 'До 50 дБ', body: 'Гибридное шумоподавление.' },
+  { start: .525, title: 'Smart Dial', body: 'Управление на шейном ободе.' },
+  { start: .58, title: '', body: '' },
+  { start: .603, title: 'Bluetooth 5.3', body: 'Беспроводное подключение.' },
+  { start: .632, title: 'AMOLED 6,67″', body: 'Частота обновления до 120 Гц.' },
+  { start: .662, title: '', body: '' },
+  { start: .684, title: 'Основная камера', body: '50 Мп', anchor: 'camera-main' },
+  { start: .698, title: 'Сверхширокоугольная', body: '50 Мп', anchor: 'camera-wide' },
+  { start: .709, title: 'Перископическая', body: '50 Мп', anchor: 'camera-tele' },
+  { start: .717, title: 'Glyph Matrix', body: '489 светодиодов.', anchor: 'glyph' },
+  { start: .76, title: '', body: '' },
+  { start: .81, title: 'Внутри Watch Pro', body: 'Условная визуализация.' },
+  { start: .856, title: 'Контроллер', body: 'Условная визуализация.' },
+  { start: .887, title: 'Чипы и память', body: 'Условная визуализация.' },
+  { start: .91, title: 'AMOLED 1,96″', body: '410 × 502 пикселей.' },
+  { start: .941, title: 'Watch Pro', body: 'Алюминиевая рамка и оранжевый ремешок.' },
+  { start: .957, title: 'Активность', body: 'Демонстрационные данные.' },
+  { start: .972, title: 'Пульс', body: 'Демонстрационные данные.' },
+  { start: .984, title: 'Устройства\nв коллекции', body: '' },
+] as const;
 
-export const editorialBeats: (Chapter & { photo?: string; caption?: string })[] = [
-  { ...chapters[0], start: 0, title: 'Buds Pro 2', body: 'Два динамика в каждом наушнике. Колёсико Smart Dial на кейсе.' },
-  { ...chapters[0], start: .076, title: 'Smart Dial', body: 'Поверните колёсико, чтобы изменить громкость. Нажатия можно настроить в Nothing X.' },
-  { ...chapters[0], start: .136 },
-  { ...chapters[0], start: .225, title: 'До 43 часов с кейсом', body: 'При выключенном активном шумоподавлении.' },
-  { ...chapters[1], start: .285, title: 'Neckband Pro', body: 'Два внутриканальных наушника на гибком шейном ободе.' },
-  { ...chapters[1], start: .321, photo: 'material/showcase/neckband-orange.webp', caption: 'Neckband Pro в оранжевом цвете', title: 'До 50 дБ', body: 'Гибридное активное шумоподавление.' },
-  { ...chapters[1], start: .378, photo: 'material/showcase/neckband-dark.webp', caption: 'Neckband Pro в тёмно-сером цвете' },
-  { ...chapters[2], start: .451, title: 'Подключение USB‑C', body: 'Кабель заряжает Neckband Pro от Nothing Phone (3). Звук передаётся по Bluetooth.' },
-  { ...chapters[2], start: .517 },
-  { ...chapters[3], start: .631, title: 'Внутри Watch Pro', body: 'Изображение платы и размещение компонентов условны.' },
-  { ...chapters[3], start: .694, title: 'Флеш-память', body: 'Хранит прошивку и настройки часов.' },
-  { ...chapters[3], start: .729, title: 'Процессор', body: 'Обновляет интерфейс и обрабатывает показания датчиков.' },
-  { ...chapters[3], start: .780, title: 'Радиомодуль', body: 'Обеспечивает беспроводное соединение со смартфоном.' },
-  { ...chapters[3], start: .837, title: 'Под дисплеем', body: 'Камера выходит из корпуса через открытый экран.' },
-  { ...chapters[4], start: .880 },
-];
-
-export function steppedIndex<T extends { start: number }>(steps: T[], progress: number) {
-  for (let i = steps.length - 1; i >= 0; i--) {
-    if (progress >= steps[i].start) return i;
+export function steppedIndex(steps: readonly { start: number }[], progress: number) {
+  for (let index = steps.length - 1; index >= 0; index--) {
+    if (progress >= steps[index].start) return index;
   }
   return 0;
 }

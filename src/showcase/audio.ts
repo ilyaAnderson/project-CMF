@@ -1,10 +1,10 @@
 import * as T from 'three';
-import { ball, box, cylinder, extrusion, finish, panelGeometry, part, ring, roundedShape, vector, wire } from './geometry';
+import { ball, box, cylinder, extrusion, finish, part, ring, roundedShape, vector, wire } from './geometry';
 import { grained, radialBrush } from './materials';
 
-const polymer = grained({ color: 0xda401a, roughness: .43, metalness: .04, clearcoat: .23, clearcoatRoughness: .29 }, 125, .17);
-const shell = grained({ color: 0xc52d13, roughness: .51, metalness: .02, clearcoat: .14 }, 124, .16);
-const soft = grained({ color: 0xa02e19, roughness: .68, metalness: 0 }, 170, .21);
+const polymer = grained({ color: 0xf7491b, roughness: .43, metalness: .04, clearcoat: .23, clearcoatRoughness: .29 }, 125, .17);
+const shell = grained({ color: 0xcf3113, roughness: .51, metalness: .02, clearcoat: .14 }, 124, .16);
+const soft = grained({ color: 0xd13d22, roughness: .68, metalness: 0 }, 170, .21);
 const seal = finish(0x602411, .57, .02);
 const dark = finish(0x141317, .39, .48);
 const silver = grained({ color: 0xb5b6ba, roughness: .28, metalness: .87, anisotropy: .49 }, 195, .15, 7);
@@ -27,7 +27,10 @@ function stemBud(side: number) {
   const bud = new T.Group();
   const housing = ball(bud, polymer, .261, .245, .222, -.044 * side, .161, -.039);
   housing.rotation.x = -.24;
-  tip(bud, -.197);
+  const nozzle = new T.Group();
+  nozzle.name = 'Nozzle';
+  tip(nozzle, -.197);
+  bud.add(nozzle);
   const x = .103 * side;
   const stem = box(bud, polymer, .202, .694, .182, .085, x, -.118, .107);
   stem.rotation.z = -.041 * side;
@@ -38,77 +41,108 @@ function stemBud(side: number) {
   return bud;
 }
 
-export function createBuds() {
-  const group = new T.Group();
-  const hero = new T.Group();
-  group.add(hero);
-  const footprint = roundedShape(2.35, 2.35, .39);
-  const foot = extrusion(hero, shell, footprint, .434, .071, 0, -.207, 0);
-  foot.rotation.x = -Math.PI / 2;
-  const seam = extrusion(hero, seal, footprint, .031, .009, 0, .006, 0);
-  seam.rotation.x = -Math.PI / 2;
-  const tray = extrusion(hero, polymer, roundedShape(2.28, 2.29, .38), .078, .032, 0, .055, 0);
-  tray.rotation.x = -Math.PI / 2;
-  for (const side of [-1, 1]) {
-    const cradle = new T.Group();
-    cradle.position.set(side * .43 + .09, .103, .15);
-    cradle.rotation.y = side * .27;
-    hero.add(cradle);
-    ball(cradle, seal, .271, .030, .225, 0, 0, -.262);
-    box(cradle, seal, .194, .022, .58, .01, side * .048, 0, .060);
-    for (const z of [.15, .224]) cylinder(cradle, gold, .023, .023, .020, side * .048, .017, z, 'y', 24);
+export function createBuds(model: T.Group) {
+  const caseRig = new T.Group();
+  caseRig.add(model);
+  const hinge = model.getObjectByName('LidHinge');
+  const dial = model.getObjectByName('SmartDial');
+  if (!hinge || !dial) throw new Error('Buds Pro 2 model is missing its articulation');
+
+  const orangeFinishes = new Map<T.MeshStandardMaterial, T.MeshPhysicalMaterial>();
+  model.traverse(object => {
+    if (!(object instanceof T.Mesh) || !(object.material instanceof T.MeshStandardMaterial)) return;
+    const material = object.material;
+    if (!material.name.includes('satin polymer') && !material.name.includes('inner tray')) return;
+    if (!orangeFinishes.has(material)) orangeFinishes.set(material, grained({
+      color: material.color.clone(), roughness: material.roughness, metalness: material.metalness,
+      clearcoat: .17, clearcoatRoughness: .28,
+    }, 140, .115));
+    object.material = orangeFinishes.get(material);
+  });
+  orangeFinishes.forEach((_, source) => source.dispose());
+
+  const brushedFace = part(dial, new T.CircleGeometry(.388, 100), new T.MeshBasicMaterial({
+    map: radialBrush(), toneMapped: false,
+  }), 0, .065, 0);
+  brushedFace.rotation.x = -Math.PI / 2;
+
+  const release = [stemBud(1), stemBud(-1)];
+  caseRig.add(...release);
+  const explode = new T.Group();
+  const solid = stemBud(1);
+  solid.rotation.set(-.1, 1.38, -.12);
+  explode.add(solid);
+  const anatomy = new T.Group();
+  explode.add(anatomy);
+
+  const cap = new T.Group();
+  tip(cap, 0);
+  cap.rotation.y = Math.PI / 2;
+  anatomy.add(cap);
+  const chamber = new T.Group();
+  anatomy.add(chamber);
+  cylinder(chamber, shell, .178, .165, .107, 0, .072, 0, 'x');
+  cylinder(chamber, dark, .141, .133, .077, -.031, .072, 0, 'x');
+  const woofer = new T.Group();
+  const tweeter = new T.Group();
+  anatomy.add(woofer, tweeter);
+  function speaker(mount: T.Group, radius: number) {
+    cylinder(mount, silver, radius, radius, .067, 0, .072, 0, 'x');
+    cylinder(mount, dark, radius * .88, radius * .88, .072, -.014, .072, 0, 'x');
+    ball(mount, silver, .026, radius * .49, radius * .49, -.049, .072, 0);
+    const suspension = ring(mount, silver, radius * .90, .007, -.051, .072, 0);
+    suspension.rotation.y = Math.PI / 2;
   }
-  const led = new T.MeshBasicMaterial({ color: 0xffcf9b, toneMapped: false });
-  ball(hero, led, .025, .013, .006, 0, -.105, 1.233);
-  box(hero, dark, .27, .069, .045, .022, .14, -.16, -1.219);
-  box(hero, silver, .15, .024, .05, .011, .14, -.16, -1.241);
-  cylinder(hero, shell, .069, .069, 1.36, .19, .004, -1.106, 'x');
+  speaker(woofer, .147);
+  speaker(tweeter, .092);
 
-  const hinge = new T.Group();
-  hinge.position.set(0, .07, -1.10);
-  hero.add(hinge);
-  const lid = extrusion(hinge, polymer, footprint, .226, .069, 0, .137, 1.10);
-  lid.rotation.x = -Math.PI / 2;
-  const inner = extrusion(hinge, shell, roundedShape(2.18, 2.18, .334), .038, .012, 0, .042, 1.10);
-  inner.rotation.x = Math.PI / 2;
-  const dial = new T.Group();
-  dial.position.set(-.731, .249, .426);
-  hinge.add(dial);
-  cylinder(dial, dark, .422, .416, .098, 0, .010, 0, 'y', 96);
-  cylinder(dial, silver, .400, .419, .084, 0, .066, 0, 'y', 96);
-  const brush = radialBrush();
-  const disc = part(dial, new T.CircleGeometry(.391, 96), new T.MeshPhysicalMaterial({
-    color: 0xa6a7aa, metalness: .86, roughness: .31, roughnessMap: brush, bumpMap: brush, bumpScale: .003,
-  }), 0, .111, 0);
-  disc.rotation.x = -Math.PI / 2;
-  const lip = ring(dial, silver, .395, .008, 0, .110, 0);
-  lip.rotation.x = -Math.PI / 2;
-  const insignia = new T.Group();
-  insignia.position.set(.48, .254, 1.907);
-  insignia.rotation.x = -Math.PI / 2;
-  hinge.add(insignia);
-  ring(insignia, shell, .093, .010, -.258, 0, 0);
-  cylinder(insignia, shell, .095, .095, .005, .252, 0, .002, 'z', 48);
-  for (let x = 0; x < 4; x++) for (let y = 0; y < 4; y++) {
-    cylinder(insignia, shell, .014, .014, .005, (x - 1.5) * .044, (y - 1.5) * .044, .002, 'z', 12);
+  const housingRim = ring(anatomy, shell, .158, .019, -.177, .087, .002);
+  housingRim.rotation.y = Math.PI / 2;
+  const socket = cylinder(anatomy, dark, .146, .145, .028, -.172, .087, .002, 'x');
+  const companion = new T.Group();
+  explode.add(companion);
+  companion.position.set(.82, .77, -.58);
+  companion.scale.setScalar(.75);
+  companion.rotation.set(.1, -.6, .27);
+  const other = stemBud(-1);
+  companion.add(other);
+  const outline = new T.Group();
+  const outlineMaterial = new T.LineBasicMaterial({ color: 0xc48d7e, transparent: true, opacity: 0 });
+  function outlineLoop(points: T.Vector3[]) {
+    outline.add(new T.LineLoop(new T.BufferGeometry().setFromPoints(points), outlineMaterial));
   }
+  outlineLoop(Array.from({ length: 64 }, (_, index) => {
+    const a = index / 64 * Math.PI * 2;
+    return vector(Math.cos(a) * .265, .157 + Math.sin(a) * .235, .02);
+  }));
+  outlineLoop(roundedShape(.21, .70, .10).getPoints(14).map(point => vector(point.x - .10, point.y - .117, .18)));
+  companion.add(outline);
 
-  const buds = [stemBud(-1), stemBud(1)];
-  group.add(...buds);
-
-  function pose(open: number, flight: number, macro: number, turn: number) {
-    hinge.rotation.x = -1.79 * open;
-    dial.rotation.y = turn * 1.75;
-    hero.position.y = -macro * 2.8;
-    hero.visible = macro < .93;
-    buds.forEach((bud, i) => {
-      const side = i === 0 ? -1 : 1;
-      bud.position.set(side * (.43 + flight * .55 + macro * .37), .29 + flight * (1.03 - side * .23) + macro * .15, .11 + side * flight * .33);
-      bud.rotation.set(-1.34 + flight * 1.62 - macro * .34, side * (.20 + flight * .99 + turn * .52), side * (.11 + flight * .34 - macro * .30));
-      bud.visible = open > .10 || flight > .05;
+  function pose(open: number, flight: number, separation: number, dialTurn: number) {
+    hinge!.rotation.x = -1.76 * open;
+    dial!.rotation.y = dialTurn;
+    release.forEach((bud, index) => {
+      const side = index === 0 ? -1 : 1;
+      bud.position.set(side * (.48 + flight * .24), .183 + flight * (1.62 + .12 * side), -side * (.32 - .16 * flight));
+      bud.rotation.set(-Math.PI / 2 + flight * 1.66, side * (.77 - flight * .25), (index === 0 ? -.51 : 2.64) * (1 - flight));
+      bud.visible = open > .12;
     });
+    const spread = T.MathUtils.smoothstep(separation, .03, .92);
+    cap.position.set(-.21 - spread * 1.47, 0, 0);
+    chamber.position.set(-.17 - spread * 1.04, 0, 0);
+    woofer.position.set(-.11 - spread * .70, 0, 0);
+    tweeter.position.set(-.06 - spread * .35, 0, 0);
+    anatomy.visible = spread > .019;
+    socket.visible = spread > .07;
+    solid.getObjectByName('Nozzle')!.visible = !anatomy.visible;
+    const fade = T.MathUtils.smoothstep(separation, .03, .29);
+    other.scale.setScalar(1 - fade * .05);
+    other.visible = fade < .52;
+    outline.visible = fade > .32;
+    outlineMaterial.opacity = fade * .72;
   }
-  return { group, pose };
+
+  return { caseRig, explode, pose, anchors: { dial, tip: cap, woofer, tweeter } };
 }
 
 function neckBud() {
@@ -122,24 +156,9 @@ function neckBud() {
   return bud;
 }
 
-export const portX = 27.65;
-export const portY = .52;
-
-function plugModel() {
-  const plug = new T.Group();
-  box(plug, dark, .463, .180, .42, .078, 0, 0, .20);
-  box(plug, shell, .452, .173, .077, .037, 0, 0, .069);
-  box(plug, silver, .292, .078, .232, .036, 0, 0, -.107);
-  box(plug, dark, .218, .046, .016, .007, 0, 0, -.225);
-  for (let i = 0; i < 5; i++) box(plug, dark, .147 - i * .010, .112, .047, .020, 0, 0, .42 + i * .034);
-  plug.rotation.y = -Math.PI / 2;
-  return plug;
-}
-
 export function createNeckband() {
   const group = new T.Group();
   const regularCable = grained({ color: 0xbe2e1a, roughness: .54, clearcoat: .22, clearcoatRoughness: .36 }, 190, .23);
-  const chargeCable = grained({ color: 0x84817e, roughness: .68, metalness: .10 }, 165, .18, 3);
   const moduleX = 22;
   const cableY = (x: number, side: number) => side * (.55 + .47 * Math.sin(x * .82)) + .18 * Math.sin(x * .40);
   const cableZ = (x: number, side: number) => side * (.45 + .31 * Math.sin(x * .69 + .8));
@@ -177,21 +196,5 @@ export function createNeckband() {
     vector(25.22, -.30, -1.66), vector(24.64, .38, -2.11), vector(23.55, .69, -1.45), vector(22.71, .58, .49),
   ], .076, 106);
 
-  const tailEnd = portX - 1.70;
-  wire(group, chargeCable, [
-    vector(22.35, .581, .69), vector(22.39, .58, .91), vector(22.92, .23, 1.36),
-    vector(23.62, -.06, 1.23), vector(24.7, .10, .72), vector(25.22, .47, .18), vector(tailEnd, portY, 0),
-  ], .049, 112);
-  const assembly = new T.Group();
-  group.add(assembly);
-  const tail = wire(assembly, chargeCable, [vector(0, portY, 0), vector(.5, portY, 0), vector(1, portY, 0)], .048, 24);
-  tail.position.x = tailEnd;
-  const plug = plugModel();
-  assembly.add(plug);
-
-  function pose(insert: number) {
-    plug.position.set(portX - .90 + .862 * insert, portY, 0);
-    tail.scale.x = plug.position.x - .57 - tailEnd;
-  }
-  return { group, pose };
+  return group;
 }

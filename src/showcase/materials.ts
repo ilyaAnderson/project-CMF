@@ -45,17 +45,20 @@ export function grained(
 
 export function radialBrush() {
   const { context, texture } = canvasTexture(512, 512);
-  const pixels = context.createImageData(512, 512);
+  const size = 512;
+  const pixels = context.createImageData(size, size);
   for (let i = 0; i < pixels.data.length / 4; i++) {
-    const dx = i % 512 - 256;
-    const dy = Math.floor(i / 512) - 256;
+    const dx = i % size - size / 2;
+    const dy = Math.floor(i / size) - size / 2;
     const angle = Math.atan2(dy, dx);
-    const radius = Math.sqrt(dx * dx + dy * dy);
-    const shade = 160 + 17 * Math.sin(radius * 1.87) + 10 * Math.sin(radius * .91) + 5 * Math.sin(angle * 731);
-    pixels.data.set([shade, shade, shade, 255], i * 4);
+    const radius = Math.hypot(dx, dy);
+    const highlight = Math.cos(angle - .85);
+    const lobe = .55 + .45 * Math.cos(angle * 2 - 1.7);
+    const brushing = Math.sin(radius * 2.35) * 2.5 + Math.sin(angle * 701) * 4 + Math.sin(angle * 318) * 2;
+    const shade = 128 + 88 * lobe ** 1.55 + 26 * highlight + brushing;
+    pixels.data.set([shade, shade, shade * .989, 255], i * 4);
   }
   context.putImageData(pixels, 0, 0);
-  texture.colorSpace = T.NoColorSpace;
   return texture;
 }
 

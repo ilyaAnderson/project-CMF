@@ -1,6 +1,6 @@
 import * as T from 'three';
 import { TessellateModifier } from 'three/addons/modifiers/TessellateModifier.js';
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { mergeGeometries, mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { box, cylinder, decal, extrusion, finish, panelGeometry, part, roundedShape, screw, vector } from './geometry';
 import { grained } from './materials';
 import { createWatchDisplay } from './displays';
@@ -110,7 +110,7 @@ function createCircuit() {
 }
 
 function strap(parent: T.Object3D, direction: number) {
-  const strapMaterial = grained({ color: 0x191a1d, roughness: .71, metalness: .02, clearcoat: .10 }, 180, .20);
+  const strapMaterial = grained({ color: 0xf4451b, roughness: .63, metalness: .02, clearcoat: .10 }, 180, .20);
   const shape = roundedShape(1.91, 5.35, .12);
   if (direction < 0) {
     for (let i = 0; i < 8; i++) {
@@ -122,27 +122,39 @@ function strap(parent: T.Object3D, direction: number) {
   const flat = new T.ExtrudeGeometry(shape, {
     depth: .095, bevelEnabled: true, bevelSegments: 3, bevelThickness: .031, bevelSize: .033, curveSegments: 12,
   });
-  const geometry = new TessellateModifier(.22, 7).modify(flat);
+  const geometry = new TessellateModifier(.135, 8).modify(flat);
   if (geometry !== flat) flat.dispose();
   const positions = geometry.getAttribute('position');
+  const profile = new T.CatmullRomCurve3([
+    vector(0, 1.59, -.22), vector(0, 2.11, -.28), vector(0, 2.43, -.70),
+    vector(0, 2.32, -1.35), vector(0, 1.87, -1.97), vector(0, 1.15, -2.34),
+    vector(0, .52, -2.50), vector(0, .01, -2.53),
+  ]);
+  const center = new T.Vector3();
+  const normal = new T.Vector3();
   for (let i = 0; i < positions.count; i++) {
-    const t = (positions.getY(i) + 2.675) / 5.35;
-    const angle = .35 + t * 1.30;
+    const t = T.MathUtils.clamp((positions.getY(i) + 2.675) / 5.35, 0, 1);
     const thickness = positions.getZ(i) - .048;
+    profile.getPoint(t, center);
+    profile.getTangent(t, normal);
     positions.setX(i, positions.getX(i) * (1 - t * .14));
-    positions.setY(i, direction * (Math.cos(angle) * (2.44 + thickness) + .02));
-    positions.setZ(i, -.25 - Math.sin(angle) * (2.31 + thickness) + .97);
+    positions.setY(i, direction * (center.y - normal.z * thickness));
+    positions.setZ(i, center.z + normal.y * thickness);
   }
   if (direction > 0) {
     const indices = [...Array(positions.count).keys()];
     for (let i = 0; i < indices.length; i += 3) [indices[i + 1], indices[i + 2]] = [indices[i + 2], indices[i + 1]];
     geometry.setIndex(indices);
   }
-  geometry.computeVertexNormals();
-  part(parent, geometry, strapMaterial);
+  geometry.deleteAttribute('normal');
+  geometry.deleteAttribute('uv');
+  const smoothGeometry = mergeVertices(geometry, 0.00001);
+  geometry.dispose();
+  smoothGeometry.computeVertexNormals();
+  part(parent, smoothGeometry, strapMaterial);
   if (direction > 0) {
     const buckle = new T.Group();
-    buckle.position.set(0, .03, -1.66);
+    buckle.position.set(0, .11, -2.55);
     buckle.rotation.x = .55;
     parent.add(buckle);
     for (const x of [-.71, .71]) box(buckle, steel, .131, .44, .13, .06, x);
@@ -153,7 +165,7 @@ function strap(parent: T.Object3D, direction: number) {
 
 export function createWatch() {
   const group = new T.Group();
-  const rim = grained({ color: 0x4b4d51, roughness: .38, metalness: .83, clearcoat: .27 }, 160, .14);
+  const rim = grained({ color: 0x818389, roughness: .38, metalness: .83, clearcoat: .27 }, 160, .14);
   const body = grained({ color: 0x222327, roughness: .52, metalness: .39 }, 160, .18);
   const right = new T.Group();
   const left = new T.Group();
@@ -189,12 +201,12 @@ export function createWatch() {
 
   const display = createWatchDisplay();
   const face = new T.Group();
-  extrusion(face, blackGlass, roundedShape(2.902, 3.363, .348), .077, .032, 0, 0, .232);
-  part(face, panelGeometry(2.71, 3.17, .312), new T.MeshBasicMaterial({ map: display.texture, toneMapped: false }), 0, 0, .272);
+  extrusion(face, blackGlass, roundedShape(2.862, 3.323, .38), .077, .033, 0, 0, .288);
+  part(face, panelGeometry(2.73, 3.19, .33), new T.MeshBasicMaterial({ map: display.texture, toneMapped: false }), 0, 0, .328);
   const shine = new T.MeshPhysicalMaterial({
     color: 0x8e99ab, roughness: .14, metalness: .7, clearcoat: .60, transparent: true, opacity: .113, depthWrite: false,
   });
-  part(face, panelGeometry(2.82, 3.29, .338), shine, 0, 0, .286);
+  part(face, panelGeometry(2.84, 3.31, .365), shine, 0, 0, .333);
   group.add(face);
 
   function pose(close: number, entry: number, press: number) {
@@ -202,12 +214,18 @@ export function createWatch() {
     left.position.x = -gap;
     right.position.x = gap;
     const sleeve = Math.sin(entry * Math.PI) * 4.10;
-    left.position.z = sleeve * .117;
-    right.position.z = sleeve * .117;
-    left.scale.z = 1 + sleeve;
-    right.scale.z = 1 + sleeve;
-    face.position.set(0, (1 - close) * 2.92, (1 - close) * .92);
-    face.rotation.x = (1 - close) * -.47;
+    const depth = (1 - close) * 2.85;
+    left.position.z = -depth * .18 + sleeve * .067;
+    right.position.z = left.position.z;
+    left.scale.z = 1 + sleeve + depth;
+    right.scale.z = left.scale.z;
+    board.position.z = -.251 - depth * .43;
+    battery.position.z = -.385 - depth * .48;
+    face.visible = close > .98;
+    band.visible = close > .72;
+    back.visible = close > .72;
+    board.visible = close < .98;
+    battery.visible = close < .98;
     button.position.x = 1.554 - press * .101;
   }
 
